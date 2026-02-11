@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+
+  db:
+    image: postgres:15
+    container_name: labmanager-db
+    restart: always
+    environment:
+      POSTGRES_DB: labmanager
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    image: dilanuc10-pixel/labmanager-backend:latest
+    container_name: labmanager-backend
+    restart: always
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/labmanager
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+    ports:
+      - "8080:8080"
+
+  frontend:
+    image: dilanuc10-pixel/labmanager-frontend:latest
+    container_name: labmanager-frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+volumes:
+  postgres_data:
