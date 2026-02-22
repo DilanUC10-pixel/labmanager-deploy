@@ -2,34 +2,39 @@ version: '3.8'
 
 services:
 
-  db:
+  labmanager-db:
     image: postgres:15
     container_name: labmanager-db
     restart: always
     environment:
       POSTGRES_DB: labmanager
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin123
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
   backend:
-    image: dilanuc10-pixel/labmanager-backend:latest
+    build: ../labmanager-backend
     container_name: labmanager-backend
     restart: always
     depends_on:
-      - db
+      - labmanager-db
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/labmanager
-      SPRING_DATASOURCE_USERNAME: admin
-      SPRING_DATASOURCE_PASSWORD: admin123
+      SPRING_DATASOURCE_URL: jdbc:postgresql://labmanager-db:5432/labmanager
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+
+      JWT_SECRET: nZpX3FvKpQ1mB8rTgW4YkHc9Zt2LmNs8UeJd4QwErTy=
+      MAIL_USERNAME: dilanurielcruzguerrero@gmail.com
+      MAIL_PASSWORD: dhib ygdf bbst gkce 
     ports:
       - "8080:8080"
 
   frontend:
-    image: dilanuc10-pixel/labmanager-frontend:latest
+    build: ../labmanager-frontend
     container_name: labmanager-frontend
     restart: always
     depends_on:
